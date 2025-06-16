@@ -23,10 +23,11 @@ class WeatherAPI {
     }
 
    
-    func getWeather(completion: @escaping (Weather?) -> Void) {
+    func getWeather(city cityName: String, completion: @escaping (Weather?) -> Void) {
+        print(cityName)
         let url = URL(
             string:
-                "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Saratov?unitGroup=us&key=PXD93BVZFAUL56EUJCHRL9CUC&contentType=json"
+                "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/\(cityName)?unitGroup=metric&key=PXD93BVZFAUL56EUJCHRL9CUC&contentType=json"
         )!
         
         URLSession.shared.dataTask(with: url) { data, response, error in

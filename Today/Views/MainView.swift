@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import Combine
 
 class MainView: UIViewController {
+    
+    private var cancellables = Set<AnyCancellable>()
 
     lazy var cityLabel: UILabel = {
         $0.text = "Саратов"
@@ -55,11 +58,27 @@ class MainView: UIViewController {
         super.viewDidLoad()
         
         setup()
+        let viewModel = MainViewModel()
         
         let formatter = DateFormatter()
         formatter.dateFormat = "E, d MMMM, yyyy"
         formatter.locale = Locale(identifier: "ru_RU")
         dateLabel.text = formatter.string(from: Date())
+        
+        viewModel.$city
+            .receive(on: DispatchQueue.main)
+            .sink{[weak self] city in
+                self?.cityLabel.text = city ?? "Город не найден"
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$currentTemp
+            .receive(on: DispatchQueue.main)
+            .sink {[weak self] temp in
+                self?.tempLabel.text = "\(temp ?? 0.0)°"
+            }
+            .store(in: &cancellables)
+        
         
         NSLayoutConstraint.activate([
             cityLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
